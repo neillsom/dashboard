@@ -27,6 +27,7 @@ import Socket, {
   //  EVENT_FRAME_TIMEOUT,
   EVENT_CONNECT_ERROR
 } from '@/utils/socket';
+import LabeledSelect from '~/components/form/LabeledSelect.vue';
 
 let lastId = 1;
 const ansiup = new AnsiUp();
@@ -42,6 +43,7 @@ export default {
     CopyCode,
     CustomCommand,
     AsyncButton,
+    LabeledSelect,
   },
 
   props: {
@@ -480,6 +482,7 @@ export default {
   <Loading v-if="$fetchState.pending" />
   <div v-else>
     <Banner v-if="$fetchState.error" color="error" :label="$fetchState.error" />
+
     <ResourceTabs v-model="value" :default-tab="defaultTab">
       <Tab v-if="showMachines" name="machine-pools" :label-key="value.isCustom ? 'cluster.tabs.machines' : 'cluster.tabs.machinePools'" :weight="4">
         <ResourceTable

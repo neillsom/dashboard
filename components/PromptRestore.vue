@@ -10,6 +10,7 @@ import { CAPI } from '@/config/types';
 import { set } from '@/utils/object';
 import SelectOrCreateAuthSecret from '@/components/form/SelectOrCreateAuthSecret';
 import ChildHook, { BEFORE_SAVE_HOOKS } from '@/mixins/child-hook';
+import LabeledSelect from '@/components/form/LabeledSelect';
 
 export default {
   components: {
@@ -19,6 +20,7 @@ export default {
     Date,
     RadioGroup,
     SelectOrCreateAuthSecret,
+    LabeledSelect
   },
 
   mixins: [
@@ -139,11 +141,17 @@ export default {
 
       <div slot="body" class="pl-10 pr-10">
         <form>
-          <h3 v-t="'promptRestore.name'"></h3>
           <div>{{ snapshot.name }}</div>
-
           <div class="spacer" />
 
+          <LabeledSelect
+            :v-model="1"
+            :label="'Multiple Restore Points..'"
+            :placeholder="'monitoring.clusterType.placeholder'"
+            :options="[1, 2, 3]"
+          />
+
+          <div class="spacer" />
           <h3 v-t="'promptRestore.date'"></h3>
           <div><Date :value="snapshot.createdAt || snapshot.created" /></div>
 

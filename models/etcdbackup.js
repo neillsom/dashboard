@@ -17,6 +17,7 @@ export default class EtcdBackup extends NormanModel {
   }
 
   promptRestore() {
+    console.log(`promptRestore().. etcdBackup:`, this);
     this.$dispatch('promptRestore', [this]);
   }
 }

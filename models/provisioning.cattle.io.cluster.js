@@ -87,6 +87,12 @@ export default class ProvCluster extends SteveModel {
     });
 
     insertAt(out, idx++, {
+      action: 'restoreSnapshot',
+      label:  'Restore Snapshot',
+      icon:   'icon icon-fw icon-backup-restore',
+    });
+
+    insertAt(out, idx++, {
       action:     'rotateCertificates',
       label:      'Rotate Certificates',
       icon:       'icon icon-backup',
@@ -448,6 +454,7 @@ export default class ProvCluster extends SteveModel {
   }
 
   takeSnapshot() {
+    console.log(`takeSnapshot() run..`);
     if ( this.isRke1 ) {
       return this.$dispatch('rancher/request', {
         url:           `/v3/clusters/${ escape(this.mgmt.id) }?action=backupEtcd`,
@@ -468,6 +475,8 @@ export default class ProvCluster extends SteveModel {
   }
 
   get etcdSnapshots() {
+    console.log(`etcdSnapshots() run..`);
+
     return (this.status?.etcdSnapshots || []).map((x) => {
       x.id = x.name || x._name;
       x.type = 'etcdBackup';
@@ -477,6 +486,16 @@ export default class ProvCluster extends SteveModel {
 
       return classify(this.$ctx, x);
     });
+  }
+
+  restoreSnapshot(resources = this) {
+    console.log(`this:`, this);
+
+    this.$dispatch('promptRestore', { resources });
+    // why does resources not have this.status.etcdSnapshots ?
+
+    // need id
+    // if multiple snapshots, need dropdown, else single 'restore' action button
   }
 
   saveAsRKETemplate(resources = this) {
