@@ -6,7 +6,7 @@ import Banner from '@/components/Banner';
 import Date from '@/components/formatter/Date.vue';
 import RadioGroup from '@/components/form/RadioGroup.vue';
 import { exceptionToErrorsArray } from '@/utils/error';
-import { CAPI } from '@/config/types';
+import { CAPI, NORMAN } from '@/config/types';
 import { set } from '@/utils/object';
 import SelectOrCreateAuthSecret from '@/components/form/SelectOrCreateAuthSecret';
 import ChildHook, { BEFORE_SAVE_HOOKS } from '@/mixins/child-hook';
@@ -27,6 +27,19 @@ export default {
     ChildHook,
   ],
 
+  async fetch() {
+    // Get all snapshots because this
+    // component is loaded before the user
+    // has selected a cluster to restore
+    await this.$store.dispatch('rancher/findAll', { type: `etcdBackup` })
+      .then((allSnapshots) => {
+        this.allSnapshots = allSnapshots;
+      })
+      .catch((err) => {
+        alert(err);
+      });
+  },
+
   data() {
     return {
       errors:              [],
@@ -36,6 +49,7 @@ export default {
       loaded:              false,
       allWorkspaces:       [],
       cloudCredentialName: null,
+      allSnapshots:        []
     };
   },
 
@@ -52,6 +66,16 @@ export default {
 
     snapshot() {
       return this.toRestore[0];
+    },
+
+    clusterSnapshots() {
+      // We use the cluster name
+      // to filter out irrelevant snapshots
+      // because the name matches the clusterId field on the
+      // snapshot, but the cluster ID doesn't.
+      const list = this.allSnapshots.filter(snapshot => snapshot.clusterId === this.snapshot.resources.metadata.name);
+
+      return list;
     },
 
     isRke2() {
@@ -148,7 +172,7 @@ export default {
             :v-model="1"
             :label="'Multiple Restore Points..'"
             :placeholder="'monitoring.clusterType.placeholder'"
-            :options="[1, 2, 3]"
+            :options="clusterSnapshots"
           />
 
           <div class="spacer" />

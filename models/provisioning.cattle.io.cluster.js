@@ -488,10 +488,10 @@ export default class ProvCluster extends SteveModel {
     });
   }
 
-  restoreSnapshot(resources = this) {
-    console.log(`this:`, this);
-
-    this.$dispatch('promptRestore', { resources });
+  restoreSnapshot(clusterModel = this) {
+    this.$dispatch('promptRestore', {
+      resources:    clusterModel,
+    });
     // why does resources not have this.status.etcdSnapshots ?
 
     // need id
